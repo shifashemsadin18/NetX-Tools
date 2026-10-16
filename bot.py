@@ -8,12 +8,16 @@ import random
 from threading import Thread
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-# የ Render ፖርት ችግርን ለመከላከል ሚኒ ዌብ ሰርቨር
+# የ Render ፖርት እና UptimeRobot (GET & HEAD) ጥያቄዎችን እንዲቀበል የተስተካከለ ሰርቨር
 class SimpleHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.end_headers()
         self.wfile.write(b"Bot is running 24/7!")
+    
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
 
 def run_web():
     port = int(os.environ.get("PORT", 10000))
