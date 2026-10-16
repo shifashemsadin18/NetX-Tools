@@ -5,8 +5,26 @@ import socket
 import time
 import os
 import random
+from threading import Thread
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
+# የ Render ፖርት ችግርን ለመከላከል ሚኒ ዌብ ሰርቨር
+class SimpleHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is running 24/7!")
+
+def run_web():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(('0.0.0.0', port), SimpleHandler)
+    server.serve_forever()
+
+Thread(target=run_web).start()
+
+# የቦትዎን ቶከን እዚህ ጋር ያስገቡ
 TOKEN = "8788982436:AAHU8wHwD2Xt2FMOI4RaaLp_icb6Q-iCx9Y"
+
 CHANNELS = ["@freeinternat10", "@Nur_Tunnel_free_ethiopian"]
 
 bot = telebot.TeleBot(TOKEN)
@@ -25,6 +43,7 @@ def check_subscription(user_id):
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     user_id = message.from_user.id
+    
     if not check_subscription(user_id):
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("📢 1ኛ ቻናል ጆይን ለማድረግ", url="https://t.me/freeinternat10"))
@@ -81,6 +100,7 @@ def verify_join(call):
 @bot.message_handler(func=lambda message: True)
 def handle_messages(message):
     user_id = message.from_user.id
+    
     if not check_subscription(user_id):
         markup = types.InlineKeyboardMarkup()
         markup.add(types.InlineKeyboardButton("📢 1ኛ ቻናል ጆይን ለማድረግ", url="https://t.me/freeinternat10"))
@@ -260,9 +280,9 @@ def handle_messages(message):
                     else:
                         bot.send_message(chat_id, f"⚠️ ለ <b>{domain}</b> ምንም ሰብ-ዶሜይን ማግኘት አልተቻለም።", parse_mode='HTML')
                 else:
-                    bot.send_message(chat_id, "⚠️ ሰርቨሩ ምላሽ አልሰጠም፣ እንደገና ይሞክሩ።", parse_mode='HTML')
+                    bot.send_message(chat_id, f"⚠️ ሰርቨሩ ምላሽ አልሰጠም፣ እንደገና ይሞክሩ።", parse_mode='HTML')
             except Exception:
-                bot.send_message(chat_id, "⚠️ የኔትወርክ ችግር አጋጥሟል።", parse_mode='HTML')
+                bot.send_message(chat_id, f"⚠️ የኔትወርክ ችግር አጋጥሟል።", parse_mode='HTML')
 
         elif state == 'zero_rated':
             country = input_text.lower()
